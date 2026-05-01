@@ -8,10 +8,10 @@ private:
 	int threatLevel;
 public:
 	SecuritySystem();
-	SecuritySystem(int newThreatLevel);
+	SecuritySystem(int id, string name,int newThreatLevel);
 	~SecuritySystem();
 	void setThreatLevel(int level);
-	int getThreatLevel();
+	int getThreatLevel() const;
 	void monitorCity();
 	void processEvent() const override;
 };

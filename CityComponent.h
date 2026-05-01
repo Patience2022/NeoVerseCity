@@ -16,14 +16,14 @@ public:
     int getComponentId() const;
 
     void setName(std::string compName);
-    std:: string getName();
+    std:: string getName()const;
 
     void activate();
     void deactivate();
 
-    std::string getStatus();
+    virtual std::string getStatus();
 
-    virtual void processEvent() const;
+    virtual void processEvent() const = 0;
     virtual ~CityComponent();
 };
 

@@ -70,16 +70,19 @@ public:
     void printCityData();
     CityData city_Data();
     void sortData();
-    CityData findByDay(int day);
+    CityData findByDay();
     CityData findMin();
     CityData findMax();
     int countElements();
+
+    void loadCityData();
 
     void addCityLogs(CityLogs data);
     void removeCityLog();
     void findCityLogs();
     void printCityLog();
     CityLogs city_Log();
+    void exportCityLogs();
 private:
     vector<CityData> cityData;
     list<CityLogs> cityLogs;

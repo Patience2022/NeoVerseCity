@@ -9,10 +9,10 @@ private:
 	double powerLevel;
 public:
 	PowerSystem();
-	PowerSystem(double);
+	PowerSystem(int id, string name,double level);
 	~PowerSystem();
 	void setPowerLevel(double level);
-	double getPowerLevel();
+	double getPowerLevel() const;
 	void supplyPower();
 	void processEvent() const override;
 };

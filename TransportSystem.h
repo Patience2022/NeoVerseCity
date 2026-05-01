@@ -11,7 +11,7 @@ private:
 public:
     // Constructors
     TransportSystem();
-    TransportSystem(int newTrafficFlow);
+    TransportSystem(int id, string name,int newTrafficFlow);
 
     // Destructor
     ~TransportSystem();

@@ -3,11 +3,12 @@ using namespace std;
 #include "PowerSystem.h"
 
 
-PowerSystem::PowerSystem()
+PowerSystem::PowerSystem() : powerLevel(0.00)
 {
 }
 
-PowerSystem::PowerSystem(double newPowerLevel)
+PowerSystem::PowerSystem(int id, string name, double level)
+	: CityComponent(id, name), powerLevel(level)
 {
 }
 
@@ -18,12 +19,14 @@ void PowerSystem::setPowerLevel(double level)
 	{
 		powerLevel = level;
 	}
-	double PowerSystem::getPowerLevel()
+	double PowerSystem::getPowerLevel() const
 	{
 		return powerLevel;
 	}
-	void PowerSystem::supplyPower() {}
+	void PowerSystem::supplyPower() {
+		cout << "Power has been restored" << endl;
+	}
 	void PowerSystem::processEvent() const
 	{
-		cout << "Processing power";
+		cout << "Processing power event";
 	}

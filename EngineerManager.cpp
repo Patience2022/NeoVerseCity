@@ -34,6 +34,7 @@ void EngineerManager::addEngineer(Engineer& eng)
 	engineers.push_back(eng);
     ofstream engFile("engineers.dat", ios::app);
     engFile << eng.getId() << ", " << eng.getName() << ", " << encryptedPassword << ", " << eng.getClearanceLevel() <<endl;
+    engFile.close();
 }
 
 Engineer* EngineerManager::searchEngineer(string id)

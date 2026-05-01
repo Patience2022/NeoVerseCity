@@ -3,11 +3,11 @@
 using namespace std;
 
 
-HealthSystem::HealthSystem()
+HealthSystem::HealthSystem(): hospitalCnt(0)
 {
 }
 
-HealthSystem::HealthSystem(int newHospitalCnt)
+HealthSystem::HealthSystem(int id, string name,int newHospitalCnt) :CityComponent(id, name), hospitalCnt(newHospitalCnt)
 {
 }
 
@@ -20,9 +20,11 @@ int HealthSystem::getHospitalCnt() const
 {
     return hospitalCnt;
 }
-void HealthSystem :: provideCare() {}
+void HealthSystem :: provideCare() {
+    cout << "Providing health services to patients " << endl;
+}
 void HealthSystem::processEvent() const {
-    cout << "Health system responding to emergency." << std::endl;
+    cout << "Processing health system event." << std::endl;
 }
 
 

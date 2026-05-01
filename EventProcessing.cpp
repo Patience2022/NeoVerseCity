@@ -3,6 +3,8 @@
 #include <iostream>
 #include <ctime>
 #include <algorithm>
+#include <sstream>
+#include <fstream>
 using namespace std;
 
 EventProcessing::EventProcessing()
@@ -159,6 +161,9 @@ void EventProcessing::EmergencyEvent::setSeverityLevel(int severity)
 void EventProcessing::addEvent(Event eve)
 {
 	eventQueue.push(eve);
+	ofstream eventFile("events.dat", ios::app);
+	eventFile << eve.getType() << ", " << eve.getDescription() << ", " << eve.getPriority() << ", " << eve.getTimestamp() << endl;
+	eventFile.close();
 }
 
 void EventProcessing::processEvent()
@@ -177,7 +182,10 @@ void EventProcessing::processEvent()
 void EventProcessing::displayEvents()
 {
 	queue<Event> tempEvent = eventQueue;
-
+	if (tempEvent.empty()) {
+		cout << "There are no events";
+		return;
+	}
 	while (!tempEvent.empty())
 	{
 		Event eve = tempEvent.front();
@@ -187,7 +195,6 @@ void EventProcessing::displayEvents()
 			<< eve.getDescription() << " \t "
 			<< eve.getPriority()
 			<< endl;
-
 		tempEvent.pop();
 	}
 }
@@ -254,14 +261,24 @@ EventProcessing::Event EventProcessing::event()
 	string description;
 	string timestamp;
 	int priority;
-	cout << "Enter type:  " << endl;
-	cin >> type;
-	cout << "Enter description:  " << endl;
-	cin >> description;
-	cout << "Enter timestamp:  " << endl;
-	cin >> timestamp;
-	cout << "Enter priority level:  " << endl;
+
+	cout << "Press any key to add event" << endl;
+	cin.ignore(10000, '\n');
+
+	cout << "Enter type: " << endl;
+	getline(cin, type);
+
+	cout << "Enter description: " << endl;
+	getline(cin, description);
+
+	cout << "Enter timestamp: " << endl;
+	getline(cin, timestamp);
+
+	cout << "Enter priority level: " << endl;
 	cin >> priority;
-	Event newEvent = Event(type,description,timestamp, priority);
+
+	cin.ignore(10000, '\n');
+
+	Event newEvent(type, description, timestamp, priority);
 	return newEvent;
 }

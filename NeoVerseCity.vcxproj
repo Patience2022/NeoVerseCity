@@ -125,7 +125,9 @@
   <ItemGroup>
     <ClCompile Include="CityComponent.cpp" />
     <ClCompile Include="CityDataManager.cpp" />
-    <ClCompile Include="city_logs.dat" />
+    <None Include="city_logs.dat">
+      <FileType>Document</FileType>
+    </None>
     <ClCompile Include="Engineer.cpp" />
     <ClCompile Include="EngineerManager.cpp" />
     <ClCompile Include="EventProcessing.cpp" />

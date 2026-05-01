@@ -1,7 +1,9 @@
 #include "CityDataManager.h"
 #include <iostream>
 #include <algorithm>
-
+#include <sstream>
+#include <fstream>
+#include <string>
 using namespace std;
 
 CityDataManager::CityDataManager()
@@ -103,6 +105,9 @@ void CityDataManager::CityLogs::setMessage(string msg)
 void CityDataManager::addCityData(CityData data)
 {
 	cityData.push_back(data);
+	ofstream datFile("city_data.dat", ios::app);
+	datFile << data.getDay() << "," << data.getPopulationLevel()<<"," <<data.getEnergyUsage()<< ","<< data.getTrafficDensity()<< ","<<data.getNumberOfAlerts() << "\n";
+	datFile.close();
 }
 
 void CityDataManager::removeCityData()
@@ -115,16 +120,16 @@ void CityDataManager::removeCityData()
 		cin.ignore(10000, '\n');
 	}
 
+	bool found = false;
 	for (auto it = cityData.begin(); it != cityData.end(); ++it) {
 		if (it->getDay() == day) {
 			cityData.erase(it);
 			cout << "Data has been successfully deleted" << endl;
 			break;
 		}
-		else
-		{
-			cout << "No data for the given day"<<endl;
-		}
+	}
+	if (!found) {
+		cout << "No data for the given day" << endl;
 	}
 }
 
@@ -169,10 +174,10 @@ CityDataManager::CityData CityDataManager::city_Data()
 	cout << "Enter number of people:  " << endl;
 	cin >> populationLevel;
 	double energyUsage;
-	cout << "Enter energy level:  " << endl;
+	cout << "Enter energy level (must be a number):  " << endl;
 	cin >> energyUsage;
 	double trafficDensity;
-	cout << "Enter traffic:  " << endl;
+	cout << "Enter traffic (must be a number):  " << endl;
 	cin >> trafficDensity;
 	int numberOfAlerts;
 	cout << "Enter number of alerts received:  " << endl;
@@ -195,8 +200,11 @@ void CityDataManager::sortData()
 	}
 }
 //This method is used to find data for a given day
-CityDataManager::CityData CityDataManager::findByDay(int day)
+CityDataManager::CityData CityDataManager::findByDay()
 {
+	int day;
+	cout << "Enter day: " << endl;
+	cin >> day;
 	if (cityData.empty()) {
 		cout << "There is no data available" << endl;
 		return CityData();
@@ -204,13 +212,15 @@ CityDataManager::CityData CityDataManager::findByDay(int day)
 	auto it = find_if(cityData.begin(), cityData.end(), [&](const CityData& data) {
 		return data.getDay() == day;
 		});
-	if (it != cityData.end()) {
+	if (it == cityData.end()) {
 		cout << "No data found for the given day: " << day << endl;
 	}
+	return *it;
 }
 //This method is used to find data with the lowest number of alerts
 CityDataManager::CityData CityDataManager::findMin()
 {
+	ifstream dataFile("city_data.dat");
 	if (cityData.empty()) {
 		cout << "There is no data available" << endl;
 		return CityData();
@@ -242,7 +252,7 @@ CityDataManager::CityData CityDataManager::findMax()
 		maxElement->getTrafficDensity(), maxElement->getNumberOfAlerts());
 	return data;
 }
-//This method is used to count data with number of alerts greater or equals to 10
+//This method is used to count data with number of alerts greater or equals to 3
 int CityDataManager::countElements()
 {
 	if (cityData.empty()) {
@@ -250,16 +260,69 @@ int CityDataManager::countElements()
 		return 0;
 	}
 	int countAlerts = count_if(cityData.begin(), cityData.end(), [](const CityData& data) {
-		return data.getNumberOfAlerts() >= 10;
+		return data.getNumberOfAlerts() >= 3;
 		});
 	cout << "Total elements with critical alerts are: " << countAlerts << endl;
 	return countAlerts;
 }
 
+
+void CityDataManager::loadCityData()
+{
+	ifstream file("city_data.dat");
+
+	if (!file) {
+		cout << "No data file found." << endl;
+		return;
+	}
+
+	cityData.clear();
+
+	string line;
+
+	while (getline(file, line))
+	{
+		if (line.empty()) continue;
+
+		stringstream ss(line);
+		string token;
+
+		int day;
+		double population, energy, traffic;
+		int alerts;
+
+		getline(ss, token, ',');
+		day = stoi(token);
+
+		getline(ss, token, ',');
+		population = stod(token);
+
+		getline(ss, token, ',');
+		energy = stod(token);
+
+		getline(ss, token, ',');
+		traffic = stod(token);
+
+		getline(ss, token, ',');
+		alerts = stoi(token);
+		cityData.push_back(CityData(day, population, energy, traffic, alerts));
+	}
+
+	file.close();
+}
+
+
+
+
+//This method create city logs and persist on the file
 void CityDataManager::addCityLogs(CityLogs data)
 {
 	cityLogs.push_back(data);
 	cout << "Data has been added successfully" << endl;
+	ofstream logFile("city_logs.dat", ios::app);
+	logFile << data.getTimestamp() << ","<< data.getMessage() << "\n";
+	logFile.close();
+
 }
 
 //Removing outdated logs
@@ -268,13 +331,19 @@ void CityDataManager::removeCityLog()
 	string time;
 	cout << "Enter timestamp"<<endl;
 	cin >> time;
+	bool deleted = false;
 	for (auto it = cityLogs.begin(); it != cityLogs.end();)
 	{
 		if (it->getTimestamp() < time) {
 			it = cityLogs.erase(it);
+			deleted = true;
+			cout << "Log has been deleted" << endl;
 		}
 		else
 			++it;
+	}
+	if (!deleted) {
+		cout << "No logs for specified time: " << time << endl;
 	}
 }
 
@@ -303,6 +372,33 @@ void CityDataManager::printCityLog()
 	}
 }
 
+//Eporting logs to csv file
+void CityDataManager::exportCityLogs()
+{
+	ifstream inputFile("city_logs.dat");
+	if (!inputFile) {
+		cout << "Unable to open city log file" << endl;
+		return;
+	}
+	ofstream outputFile("city_logs.csv");
+	if (!outputFile) {
+		cout << "Unable to generate csv" << endl;
+		return;
+	}
+	outputFile << "Timestamp,Message\n";
+	string line;
+	while (getline(inputFile, line)) {
+		size_t position = line.find(",");
+		if (position == string::npos) continue;
+		string timestamp = line.substr(0, position);
+		string message = line.substr(position + 1);
+		outputFile <<timestamp<<","<<message<< "\n";
+	}
+	inputFile.close();
+	outputFile.close();
+	
+}
+
 CityDataManager::CityLogs CityDataManager::city_Log()
 {
 	string time;
@@ -310,7 +406,8 @@ CityDataManager::CityLogs CityDataManager::city_Log()
 	cout << "Enter timestamp:  " << endl;
 	cin >> time;
 	cout << "Enter message:  " << endl;
-	cin >> message;
+	cin.ignore();
+	getline(cin, message);
 	CityLogs newCityLog = CityLogs(time, message);
 	return newCityLog;
 }

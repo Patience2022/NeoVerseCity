@@ -9,7 +9,7 @@ private:
     int hospitalCnt;
 public:
     HealthSystem();
-    HealthSystem(int newHospitalCnt);
+    HealthSystem(int id, string name, int newHospitalCnt);
     ~HealthSystem();
     void setHospitalCnt(int count);
     int getHospitalCnt() const;
